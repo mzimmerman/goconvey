@@ -42,6 +42,14 @@ func TestScanner(t *testing.T) {
 				})
 			})
 
+			SkipConvey("When a package profile is created within a watched folder", func() {
+				fixture.fs.Create(normalize("/root/.goconvey"), 42, time.Now())
+
+				Convey("The scanner should report a change in state", func() {
+					So(fixture.scan(), ShouldBeTrue)
+				})
+			})
+
 			Convey("When a file that starts with . is created within a watched folder", func() {
 				fixture.fs.Create(normalize("/root/.new_stuff.go"), 42, time.Now())
 

@@ -18,10 +18,10 @@ import (
 
 	"github.com/smartystreets/goconvey/web/server/api"
 	"github.com/smartystreets/goconvey/web/server/contract"
-	executor "github.com/smartystreets/goconvey/web/server/executor"
-	parser "github.com/smartystreets/goconvey/web/server/parser"
+	"github.com/smartystreets/goconvey/web/server/executor"
+	"github.com/smartystreets/goconvey/web/server/parser"
 	"github.com/smartystreets/goconvey/web/server/system"
-	watch "github.com/smartystreets/goconvey/web/server/watcher"
+	"github.com/smartystreets/goconvey/web/server/watcher"
 )
 
 func init() {
@@ -102,18 +102,18 @@ func wireup() (*contract.Monitor, contract.Server) {
 	depthLimit := system.NewDepthLimit(system.NewFileSystem(), depth)
 	shell := system.NewShell(shellExecutor, gobin, short, cover, reports)
 
-	watcher := watch.NewWatcher(depthLimit, shell)
-	watcher.Adjust(working)
+	packageWatcher := watcher.NewWatcher(depthLimit, shell)
+	packageWatcher.Adjust(working)
 
-	parser := parser.NewParser(parser.ParsePackageResults)
+	resultParser := parser.NewParser(parser.ParsePackageResults)
 	tester := executor.NewConcurrentTester(shell)
 	tester.SetBatchSize(packages)
 
 	longpollChan, pauseUpdate := make(chan chan string), make(chan bool, 1)
-	executor := executor.NewExecutor(tester, parser, longpollChan)
-	server := api.NewHTTPServer(watcher, executor, longpollChan, pauseUpdate)
-	scanner := watch.NewScanner(depthLimit, watcher)
-	monitor := contract.NewMonitor(scanner, watcher, executor, server, pauseUpdate, sleeper)
+	testExecutor := executor.NewExecutor(tester, resultParser, longpollChan)
+	server := api.NewHTTPServer(packageWatcher, testExecutor, longpollChan, pauseUpdate)
+	scanner := watcher.NewScanner(depthLimit, packageWatcher)
+	monitor := contract.NewMonitor(scanner, packageWatcher, testExecutor, server, pauseUpdate, sleeper)
 
 	return monitor, server
 }
