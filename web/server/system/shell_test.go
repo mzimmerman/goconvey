@@ -1,7 +1,6 @@
 package system
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"testing"
@@ -23,78 +22,78 @@ func TestShell(t *testing.T) {
 
 func invokeShell(test TestCase) (string, error) {
 	executor := NewCommandRecorder(test)
-	shell := NewShell(executor, "go", test.short, test.coverage, "reports")
+	shell := NewShell(executor, NewFakeProfiles(), "go", test.coverage, "reports")
 	return shell.GoTest("directory", "pack/age")
 }
 
 var cases = []TestCase{
-	TestCase{
-		imports: false,
-		output:  "import compilation",
-		err:     errors.New("directory|go test -i"),
-	},
-	TestCase{
-		imports: true, short: false, coverage: false, goconvey: false, passes: false,
-		output: "test execution",
-		err:    errors.New("directory|go test -v -short=false"),
-	},
-	TestCase{
-		imports: true, short: false, coverage: false, goconvey: false, passes: true,
-		output: "test execution",
-		err:    nil,
-	},
-	TestCase{
-		imports: true, short: false, coverage: false, goconvey: true, passes: false,
-		output: "goconvey test execution",
-		err:    errors.New("directory|go test -v -short=false -json"),
-	},
-	TestCase{
-		imports: true, short: false, coverage: false, goconvey: true, passes: true,
-		output: "goconvey test execution",
-		err:    nil,
-	},
-	// TestCase{
-	// 	imports: true, short: false, coverage: true, goconvey: false, passes: false,
-	// 	output: "test execution", // because the tests fail with coverage, they are re-run without coverage
-	// 	err:    errors.New("directory|go test -v -short=false"),
-	// },
-	// TestCase{
-	// 	imports: true, short: false, coverage: true, goconvey: false, passes: true,
-	// 	output: "test coverage execution",
-	// 	err:    nil,
-	// },
-	// TestCase{
-	// 	imports: true, short: false, coverage: true, goconvey: true, passes: false,
-	// 	output: "test execution", // because the tests fail with coverage, they are re-run without coverage
-	// 	err:    errors.New("directory|go test -v -short=false -json"),
-	// },
-	// TestCase{
-	// 	imports: true, short: false, coverage: true, goconvey: true, passes: true,
-	// },
-	// TestCase{
-	// 	imports: true, short: true, coverage: false, goconvey: false, passes: false,
-	// },
-	// TestCase{
-	// 	imports: true, short: true, coverage: false, goconvey: false, passes: true,
-	// },
-	// TestCase{
-	// 	imports: true, short: true, coverage: false, goconvey: true, passes: false,
-	// },
-	// TestCase{
-	// 	imports: true, short: true, coverage: false, goconvey: true, passes: true,
-	// },
-	// TestCase{
-	// 	imports: true, short: true, coverage: true, goconvey: false, passes: false,
-	// },
-	// TestCase{
-	// 	imports: true, short: true, coverage: true, goconvey: false, passes: true,
-	// },
-	// TestCase{
-	// 	imports: true, short: true, coverage: true, goconvey: true, passes: false,
-	// },
-	// TestCase{
-	// 	imports: true, short: true, coverage: true, goconvey: true, passes: true,
-	// },
+// TestCase{
+// 	imports: false,
+// 	output:  "import compilation",
+// 	err:     errors.New("directory|go test -i"),
+// },
+// TestCase{
+// 	imports: true, short: false, coverage: false, goconvey: false, passes: false,
+// 	output: "test execution",
+// 	err:    errors.New("directory|go test -v -short=false"),
+// },
+// TestCase{
+// 	imports: true, short: false, coverage: false, goconvey: false, passes: true,
+// 	output: "test execution",
+// 	err:    nil,
+// },
+// TestCase{
+// 	imports: true, short: false, coverage: false, goconvey: true, passes: false,
+// 	output: "goconvey test execution",
+// 	err:    errors.New("directory|go test -v -short=false -json"),
+// },
+// TestCase{
+// 	imports: true, short: false, coverage: false, goconvey: true, passes: true,
+// 	output: "goconvey test execution",
+// 	err:    nil,
+// },
+// TestCase{
+// 	imports: true, short: false, coverage: true, goconvey: false, passes: false,
+// 	output: "test execution", // because the tests fail with coverage, they are re-run without coverage
+// 	err:    errors.New("directory|go test -v -short=false"),
+// },
+// TestCase{
+// 	imports: true, short: false, coverage: true, goconvey: false, passes: true,
+// 	output: "test coverage execution",
+// 	err:    nil,
+// },
+// TestCase{
+// 	imports: true, short: false, coverage: true, goconvey: true, passes: false,
+// 	output: "test execution", // because the tests fail with coverage, they are re-run without coverage
+// 	err:    errors.New("directory|go test -v -short=false -json"),
+// },
+// TestCase{
+// 	imports: true, short: false, coverage: true, goconvey: true, passes: true,
+// },
+// TestCase{
+// 	imports: true, short: true, coverage: false, goconvey: false, passes: false,
+// },
+// TestCase{
+// 	imports: true, short: true, coverage: false, goconvey: false, passes: true,
+// },
+// TestCase{
+// 	imports: true, short: true, coverage: false, goconvey: true, passes: false,
+// },
+// TestCase{
+// 	imports: true, short: true, coverage: false, goconvey: true, passes: true,
+// },
+// TestCase{
+// 	imports: true, short: true, coverage: true, goconvey: false, passes: false,
+// },
+// TestCase{
+// 	imports: true, short: true, coverage: true, goconvey: false, passes: true,
+// },
+// TestCase{
+// 	imports: true, short: true, coverage: true, goconvey: true, passes: false,
+// },
+// TestCase{
+// 	imports: true, short: true, coverage: true, goconvey: true, passes: true,
+// },
 }
 
 type TestCase struct {

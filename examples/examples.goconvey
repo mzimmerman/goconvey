@@ -1,0 +1,3 @@
+-short
+-timeout=1s
+-run=TestBowlingGame

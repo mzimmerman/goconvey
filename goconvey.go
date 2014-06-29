@@ -99,7 +99,8 @@ func wireup() (*contract.Monitor, contract.Server) {
 	cover = coverageEnabled(cover, reports, shellExecutor)
 
 	depthLimit := system.NewDepthLimit(system.NewFileSystem(), depth)
-	shell := system.NewShell(shellExecutor, gobin, cover, reports)
+	profiles := system.NewProfileCache()
+	shell := system.NewShell(shellExecutor, profiles, gobin, cover, reports)
 
 	packageWatcher := watcher.NewWatcher(depthLimit, shell)
 	packageWatcher.Adjust(working)

@@ -1,6 +1,7 @@
 package contract
 
 import (
+	"errors"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -56,3 +57,5 @@ type (
 		Setenv(key, value string) error
 	}
 )
+
+var ProfileSkipsPackage = errors.New("Package was skipped because of profile directive.")
