@@ -1,18 +1,16 @@
 package system
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
 type Shell struct {
-	executor      Executor
-	coverage      bool
-	gobin         string
-	reportsPath   string
-	shortArgument string
+	executor    Executor
+	coverage    bool
+	gobin       string
+	reportsPath string
 }
 
 func (self *Shell) GoTest(directory, packageName string) (output string, err error) {
@@ -36,31 +34,31 @@ func (self *Shell) goTest(directory, packageName string) (output string, err err
 }
 
 func (self *Shell) tryRunWithCoverage(directory, packageName string) (output string, err error) {
-	profileName := self.composeCoverageProfileName(packageName)
-	output, err = self.runWithCoverage(directory, packageName, profileName+".txt")
+	coverageReport := self.composeCoverageReportPath(packageName)
+	output, err = self.runWithCoverage(directory, packageName, coverageReport+".txt")
 
 	if err != nil && self.coverage {
 		output, err = self.runWithoutCoverage(directory, packageName)
 	} else if self.coverage {
-		self.generateCoverageReports(directory, profileName+".txt", profileName+".html")
+		self.generateCoverageReports(directory, coverageReport+".txt", coverageReport+".html")
 	}
 	return
 }
 
-func (self *Shell) composeCoverageProfileName(packageName string) string {
+func (self *Shell) composeCoverageReportPath(packageName string) string {
 	reportFilename := strings.Replace(packageName, "/", "-", -1)
 	reportPath := filepath.Join(self.reportsPath, reportFilename)
 	return reportPath
 }
 
-func (self *Shell) runWithCoverage(directory, packageName, profile string) (string, error) {
-	arguments := []string{"test", "-v", self.shortArgument, "-covermode=set", "-coverprofile=" + profile}
+func (self *Shell) runWithCoverage(directory, packageName, coverageReport string) (string, error) {
+	arguments := []string{"test", "-v", "-covermode=set", "-coverprofile=" + coverageReport}
 	arguments = append(arguments, self.jsonFlag(directory, packageName)...)
 	return self.executor.Execute(directory, self.gobin, arguments...)
 }
 
 func (self *Shell) runWithoutCoverage(directory, packageName string) (string, error) {
-	arguments := []string{"test", "-v", self.shortArgument}
+	arguments := []string{"test", "-v"}
 	arguments = append(arguments, self.jsonFlag(directory, packageName)...)
 	return self.executor.Execute(directory, self.gobin, arguments...)
 }
@@ -73,8 +71,8 @@ func (self *Shell) jsonFlag(directory, packageName string) []string {
 	return []string{"-json"}
 }
 
-func (self *Shell) generateCoverageReports(directory, profile, html string) {
-	self.executor.Execute(directory, self.gobin, "tool", "cover", "-html="+profile, "-o", html)
+func (self *Shell) generateCoverageReports(directory, coverageReport, html string) {
+	self.executor.Execute(directory, self.gobin, "tool", "cover", "-html="+coverageReport, "-o", html)
 }
 
 func (self *Shell) Getenv(key string) string {
@@ -88,11 +86,10 @@ func (self *Shell) Setenv(key, value string) error {
 	return nil
 }
 
-func NewShell(executor Executor, gobin string, short bool, cover bool, reports string) *Shell {
+func NewShell(executor Executor, gobin string, cover bool, reports string) *Shell {
 	self := new(Shell)
 	self.executor = executor
 	self.gobin = gobin
-	self.shortArgument = fmt.Sprintf("-short=%t", short)
 	self.coverage = cover
 	self.reportsPath = reports
 	return self
