@@ -22,7 +22,6 @@ func (self *ConcurrentTester) TestAll(folders []*contract.Package) {
 	} else {
 		newCuncurrentCoordinator(folders, self.batchSize, self.shell).ExecuteConcurrently()
 	}
-	return
 }
 
 func (self *ConcurrentTester) executeSynchronously(folders []*contract.Package) {
@@ -34,15 +33,12 @@ func (self *ConcurrentTester) executeSynchronously(folders []*contract.Package) 
 
 		log.Printf("Executing tests: %s\n", folder.Name)
 
-		// TODO: unit test
 		folder.Output, folder.Error = self.shell.GoTest(folder.Path, folder.Name)
-		if folder.Error == contract.ProfileSkipsPackage {
-			folder.Active = false // TODO: Will/Should this cause the UI to 'ignore' that package?
-			// If so, will/should the UI be able to override the profile setting to activate the package?
-			log.Printf("Skipping execution because of profile directive: %s\n", folder.Name)
-		}
-
-		if folder.Error != nil && folder.Output == "" {
+		if folder.Error == contract.ProfileSkipsPackage { // TODO: unit test
+			log.Println("Marking folder as ignored according to profile directive:", folder.Name)
+			folder.Active = false
+		} else if folder.Error != nil && folder.Output == "" {
+			log.Println("Unexpected error at", folder.Path)
 			panic(folder.Error)
 		}
 	}

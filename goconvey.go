@@ -102,7 +102,7 @@ func wireup() (*contract.Monitor, contract.Server) {
 	profiles := system.NewProfileCache()
 	shell := system.NewShell(shellExecutor, profiles, gobin, cover, reports)
 
-	packageWatcher := watcher.NewWatcher(depthLimit, shell)
+	packageWatcher := watcher.NewWatcher(depthLimit, shell, profiles)
 	packageWatcher.Adjust(working)
 
 	resultParser := parser.NewParser(parser.ParsePackageResults)

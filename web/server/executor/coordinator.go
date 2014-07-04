@@ -55,7 +55,10 @@ func (self *concurrentCoordinator) awaitCompletion() {
 
 func (self *concurrentCoordinator) checkForErrors() {
 	for _, folder := range self.folders {
-		if hasUnexpectedError(folder) {
+		if folder.Error == contract.ProfileSkipsPackage { // TODO: unit test
+			log.Println("Marking folder as ignored according to profile directive:", folder.Name)
+			folder.Active = false
+		} else if hasUnexpectedError(folder) {
 			log.Println("Unexpected error at", folder.Path)
 			panic(folder.Error)
 		}

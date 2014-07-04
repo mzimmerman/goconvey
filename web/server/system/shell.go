@@ -80,7 +80,7 @@ func (self *Shell) jsonFlag(directory, packageName string) []string {
 	if !strings.Contains(imports, goconveyDSLImport) && err == nil {
 		return []string{}
 	}
-	return []string{"-json"}
+	return []string{"-json"} // TODO: BTW, if -json is set, we probably need to filter out -parallel from the profile.
 }
 
 func (self *Shell) generateCoverageReports(directory, coverageReport, html string) {

@@ -10,12 +10,14 @@ import (
 	"strings"
 
 	"github.com/smartystreets/goconvey/web/server/contract"
+	"github.com/smartystreets/goconvey/web/server/system"
 )
 
 type Watcher struct {
 	files          contract.FileSystem
 	shell          contract.Shell
 	watched        map[string]*contract.Package
+	profiles       system.Profiles
 	root           string
 	ambientGoPaths []string
 }
@@ -108,14 +110,18 @@ func (self *Watcher) IsWatched(folder string) bool {
 func (self *Watcher) IsIgnored(folder string) bool {
 	if value, exists := self.watched[folder]; exists {
 		return !value.Active
+	} else if self.profiles.IsIgnored(folder) { // TODO: unit test
+		self.Ignore(folder)
+		return true
 	}
 	return false
 }
 
-func NewWatcher(files contract.FileSystem, shell contract.Shell) *Watcher {
+func NewWatcher(files contract.FileSystem, shell contract.Shell, profiles system.Profiles) *Watcher {
 	self := new(Watcher)
 	self.files = files
 	self.shell = shell
+	self.profiles = profiles
 	self.watched = map[string]*contract.Package{}
 	goPath := self.shell.Getenv("GOPATH")
 	self.ambientGoPaths = strings.Split(goPath, entrySeparator)
