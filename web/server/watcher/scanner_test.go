@@ -269,7 +269,7 @@ func newScannerFixture() *scannerFixture {
 	self.fs.Create(normalize("/root/sub"), 0, time.Now())
 	self.fs.Create(normalize("/root/sub/file.go"), 2, time.Now())
 	self.fs.Create(normalize("/root/sub/empty"), 0, time.Now())
-	self.watcher = newWatcherWrapper(NewWatcher(self.fs, system.NewFakeShell()))
+	self.watcher = newWatcherWrapper(NewWatcher(self.fs, system.NewFakeShell(), new(FakeProfileCache)))
 	self.watcher.Adjust(normalize("/root"))
 	self.scanner = NewScanner(self.fs, self.watcher)
 	return self
@@ -328,3 +328,11 @@ func newWatcherWrapper(inner *Watcher) *WatcherWrapper {
 	self.deleted = []string{}
 	return self
 }
+
+/********** FakeProfileCache ***********/
+
+type FakeProfileCache struct{}
+
+func (self *FakeProfileCache) Refresh(path string)              {}
+func (self *FakeProfileCache) IsIgnored(path string) bool       { return false }
+func (self *FakeProfileCache) GoTestFlags(path string) []string { return nil }

@@ -248,7 +248,7 @@ func (self *watcherFixture) pointTo(path string) {
 func (self *watcherFixture) setAmbientGoPath(path string) {
 	self.shell.Setenv("GOPATH", path)
 	self.files.Create(path, int64(42+len(path)), time.Now())
-	self.watcher = NewWatcher(self.files, self.shell)
+	self.watcher = NewWatcher(self.files, self.shell, new(FakeProfileCache))
 }
 
 func (self *watcherFixture) receiveNotificationOfNewFolder() (actual, expected interface{}) {
@@ -417,7 +417,7 @@ func newWatcherFixture() *watcherFixture {
 	self.files = system.NewFakeFileSystem()
 	self.shell = system.NewFakeShell()
 	self.shell.Setenv("GOPATH", gopath)
-	self.watcher = NewWatcher(self.files, self.shell)
+	self.watcher = NewWatcher(self.files, self.shell, new(FakeProfileCache))
 	return self
 }
 
