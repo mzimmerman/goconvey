@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/smartystreets/goconvey/convey"
 )
 
 ////////////////////////////////////////////////////////////////////////
@@ -104,9 +106,9 @@ func identifyProfile(folder string) string {
 	return filepath.Join(folder, ".goconvey")
 }
 
-// TODO: unit test
-func parseProfile(profile string) (IsIgnored bool, arguments []string) {
+func parseProfile(profile string) (isIgnored bool, arguments []string) {
 	lines := strings.Split(profile, "\n")
+	convey.Println("Number of lines:", len(lines))
 	arguments = []string{}
 
 	for _, line := range lines {
